@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
-import { projects } from "@/lib/content";
-// Set NEXT_PUBLIC_SITE_URL to the deployed origin before publishing this sitemap.
+import { projects, studio } from "@/lib/content";
+// Keep generated URLs on the deployed domain; NEXT_PUBLIC_SITE_URL can override it.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const base = studio.siteUrl;
   const routes = ["", "/work", "/services", "/studio", "/contact"];
   const pages: MetadataRoute.Sitemap = [
     ...["en", "ru"].flatMap((locale) => routes.map((route) => ({ url: `${base}/${locale}${route}`, alternates: { languages: { en: `${base}/en${route}`, ru: `${base}/ru${route}` } } }))),

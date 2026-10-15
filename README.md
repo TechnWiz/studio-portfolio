@@ -1,42 +1,31 @@
 # Creative Studio Portfolio
 
-A bilingual creative studio portfolio built with the existing Next.js 16, React 19 and TypeScript app. The site uses localized `/en` and `/ru` routes, a reusable typed project source, and lightweight CSS artwork placeholders that can be replaced by real stills and films.
+An English/Russian portfolio built on Next.js 16, React 19 and TypeScript. It combines a procedural 3D hero for capable desktop browsers with CSS artwork fallbacks, typed concept cases, and a configurable contact webhook.
 
-## Setup
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Use `npm run lint`, `npx tsc --noEmit`, and `npm run build` for checks.
+Open http://localhost:3000. Useful checks: `npm run lint`, `npx tsc --noEmit`, `npm run build`.
 
-## Project map
+## Where to edit
 
-- `app/[locale]/` — English and Russian home, work, case study, services, studio, and contact pages.
-- `app/globals.css` — color, type, layout, responsive rules, and reduced motion behavior.
-- `components/site.tsx` — shared navigation, portfolio cards and filters, contact form.
-- `lib/content.ts` — studio settings, all translations, and project data.
-- `lib/pages.tsx` — reusable page compositions.
-- `public/media/work/<slug>/` — add project videos, posters, gallery images, and optional model files here.
-- `public/brand/` — add the real logo here when supplied; configure its path in `lib/content.ts`.
+- `lib/content.ts` — studio settings, all English/Russian interface text, project narratives, services and media paths.
+- `lib/pages.tsx` and `components/site.tsx` — shared page layouts, navigation, filters, transitions and form behavior.
+- `components/hero-scene.tsx` and `components/hero-canvas.tsx` — WebGL fallback, mobile camera/composition, procedural lunar surface, lighting and motion tuning; reduced motion keeps the moon visible but still.
+- `components/studio-scene.tsx` and `components/studio-canvas.tsx` — an in-view lazy-loaded liquid-glass orb. Adjust its shader colors/distortion in `glassFragment`; moon crater texture, lighting, camera scale and spin are in `hero-canvas.tsx` (`motionTuning`).
+- `components/model-viewer.tsx` — on-demand GLB viewing; Three.js only loads after the user opens a supplied model.
+- `app/globals.css` — theme, responsive layout, glass surfaces, the isolated SVG liquid lens, hover states and reduced-motion overrides.
+- `app/[locale]/` — localized routes, metadata and generated social preview images.
+- `public/media/work/<slug>/` — add approved posters, WebM/MP4 videos, gallery images and GLB models. Set paths in the project data; videos on cards load only on hover/focus, case videos use controls and `preload="none"`.
 
-## Studio and localization
+## Portfolio content and contact delivery
 
-Edit `studio` in `lib/content.ts` to change the displayed studio name, location, email, logo path, and social links. The current name is a replaceable working label because no official name or logo was included in the workspace. Edit `copy.en` and `copy.ru` in the same file for shared navigation and homepage text. Service detail copy is in `ServicesPage` in `lib/pages.tsx`.
+Current entries are explicitly labeled studio concepts; their procedural artwork is not client work. Add verified project details or replace a concept in `projects` in `lib/content.ts`. Supply both locales, category, summary, narrative and services. Add optional media only when approved: `video`, `poster`, `mobileVideo`, `gallery` and `model`. Missing optional media leaves the CSS artwork fallback in place.
 
-## Adding a project
+The form validates in the browser and again at `/api/contact`. It reports “not connected” until `CONTACT_WEBHOOK_URL` is configured. The endpoint forwards validated JSON to that configured webhook, optionally using `CONTACT_WEBHOOK_SECRET` as a bearer token. It returns a delivery error if the webhook fails; it never reports success without an upstream 2xx response. No real email or webhook details were supplied. Add the public email in `studio.email` if you want a direct fallback contact.
 
-Add an entry to the typed `projects` array in `lib/content.ts`. The slug becomes `/en/work/<slug>` and `/ru/work/<slug>`. Supply both translations, category, summary, narrative, and service list. Put media in `public/media/work/<slug>/`, then set the optional media paths, for example:
-
-```ts
-media: { video: "/media/work/new-project/cover.webm", poster: "/media/work/new-project/poster.webp", mobileVideo: "/media/work/new-project/mobile.mp4", model: "/media/work/new-project/model.glb" }
-```
-
-Video paths are optional; missing video keeps the art-directed static placeholder. Use compressed WebM/MP4, a properly sized poster, and avoid adding large films above the fold. The content model reserves an optional model path; an interactive model viewer is not wired until actual GLB assets and presentation needs exist.
-
-## Visual tuning and contact
-
-Change palette and typography variables at the top of `app/globals.css`; responsive breakpoints and motion preferences are near the end. No logo, real portfolio assets, email, or social links were present, so placeholders are clearly replaceable. Adding `studio.email` enables the contact form's mailto handoff. The form does not send data to a server; configure an email service and endpoint if direct delivery is needed. No external services are currently required. Set `NEXT_PUBLIC_SITE_URL` to the deployed origin so sitemap and robots URLs point to the live site.
-
-
+Set `NEXT_PUBLIC_SITE_URL` to the deployed origin for canonical metadata, sitemap and robots URLs. The logo path and social links are also centralized in `studio` in `lib/content.ts`; no logo, approved portfolio media, email or social profiles were present in the repository.
